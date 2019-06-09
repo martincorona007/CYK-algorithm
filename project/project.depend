@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1560048510 source:c:\users\martin\documents\github\cyk\project\main.cpp
+	<iostream>
+	<stdio.h>
+	<set>
+	<map>
+	<stdlib.h>
+
