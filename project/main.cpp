@@ -20,6 +20,8 @@ int length(char*);
 void print(intset &a);
 std::set<char> buildset(char r);
 
+
+
 int main()
 {
     char W[15];
@@ -31,35 +33,35 @@ int main()
     grammar G[9];
 
 
-    G[0].generator='S';
-    G[0].generator2='C';
-    G[0].generator3='A';
+    G[0].generator=83;
+    G[0].generator2=67;
+    G[0].generator3=65;
 
-    G[1].generator='B';
-    G[1].generator2='S';
-    G[1].generator3='D';
+    G[1].generator=66;
+    G[1].generator2=83;
+    G[1].generator3=68;
 
-    G[2].generator='R';
-    G[2].generator2='K';
-    G[2].generator3='B';
+    G[2].generator=82;
+    G[2].generator2=75;
+    G[2].generator3=66;
 
-    G[3].generator='A';
-    G[3].generator2='S';
+    G[3].generator=65;
+    G[3].generator2=83;
 
-    G[4].generator='D';
-    G[4].generator2='R';
+    G[4].generator=68;
+    G[4].generator2=82;
 
-    G[5].generator='C';
-    G[5].terminal='l';
+    G[5].generator=83;
+    G[5].terminal=120;
 
-    G[6].generator='K';
-    G[6].terminal='c';
+    G[6].generator=99;
+    G[6].terminal=108;
 
-    G[7].generator='S';
-    G[7].terminal='x';
+    G[7].generator=75;
+    G[7].terminal=99;
 
-    G[8].generator='R';
-    G[8].terminal='t';
+    G[8].generator=82;
+    G[8].terminal=116;
 
     CYK(G,W);
 /*
@@ -80,36 +82,38 @@ printf("table \n\n");
 bool CYK(grammar G[],char *w){
     int n=0;//length
     int a=0;//run over the word
-    int i=1;
-        n=length(w);
-
+    int i=1;//counter
+    char *P;
+        n=length(w);//get the length of the word
 
         while(i<=n){
 
+            for(int x=0;x<9;x++){//searh on the struct grammar
+                if(G[x].terminal==w[a]){//check if there's some letter's words equals to the terminals
 
-                for(int x=0;x<9;x++){//searh on the struct grammar
-                    if(G[x].terminal==w[a]){
-                        //printf("%c",G[x].generator);
+
                         printf("\nconstruye el conjunto  %i,%i",i,1);
                         N[i][1]=buildset(G[x].generator);
+
                         a++;//run over the word
                         i++;
-                    }
-
 
                 }
-
-
-
+            }
 
         }
-        printf("\n");
-    /*
-        printf("%s",G[1].generator);
-        printf("%s",G[1].generator2);
-        printf("%s",G[1].terminaloGenerator);
-        */
-//       print(aux);
+        for(int j=2;j<=n;j++){
+            for(int ii=1;ii<n-j+1;ii++){
+                N[ii][j]=buildset('0');
+                for(int k=1;k<j-1;k++){/*
+                    intset::iterator it;
+                    it=intset.find(N[ii][k]);
+
+                        N[ii][j-k];*/
+                 //   N[ii][j]=buildset()
+                }
+            }
+        }
 
 
 
@@ -118,8 +122,8 @@ return 2;
 std::set<char> buildset(char r){
     std::set<char> aux;
     aux.insert(r);
-    printf("  conjunto generado: ");
-    print(aux);
+   // printf("\n  conjunto generado: ");
+    //print(aux);
 return aux;
 }
 void print(intset &a){
