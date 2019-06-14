@@ -18,6 +18,7 @@ typedef struct grammar{
 bool CYK(grammar G[],char*);
 int length(char*);
 void print(intset &a);
+char step_seven(grammar G[],intset &a,intset &b);
 std::set<char> buildset(char r);
 
 
@@ -58,8 +59,8 @@ int main()
     G[6].generator=75;//K
     G[6].terminal=99;//c
 
-    G[7].generator='S';//S
-    G[7].terminal='x';//x
+    G[7].generator=83;//S
+    G[7].terminal=120;//x
 
     CYK(G,W);
 /*
@@ -71,7 +72,18 @@ printf("table \n\n");
 	for (int i = 1;i <=length(W);i++) {
 
 		for (int j = 1;j <= length(W);j++) {
-			printf("\nt[%i,%i]", i, j);
+            if((i==1&&j==2)|| (i==2&&j==2)){
+                printf("\n\t t[%i,%i]", i, j);
+
+            }else if(i==1&&j==3){
+                printf("\n\t\t t[%i,%i]", i, j);
+
+            }else{
+             printf("\nt[%i,%i]", i, j);
+
+            }
+
+
 			print(N[i][j]);
 		}
 	}
@@ -81,6 +93,7 @@ bool CYK(grammar G[],char *w){
     int n=0;//length
     int a=0;//run over the word
     int i=1;
+    char s[5];
         n=length(w);//get the length of the word
 
         while(i<=n){
@@ -93,6 +106,17 @@ bool CYK(grammar G[],char *w){
                 }
             }
         }
+        for(int j=2;j<=n;j++){
+
+            for(int ii=1;ii<=n-j+1;ii++){
+                N[ii][j]=buildset(' ');
+                for(int k=1;k<=j-1;k++){
+                printf("\n in N[%i][%i] from N[%i]][%i]",ii,j,ii,k);
+                N[ii][j]=buildset(step_seven(G,N[ii][k],N[ii+k][j-k]));
+                }
+            }
+        }
+
         /*
         for(int j=2;j<=n;j++){
             for(int ii=1;ii<n-j+1;ii++){
@@ -109,6 +133,33 @@ bool CYK(grammar G[],char *w){
 
 
 return 2;
+}
+char step_seven(grammar G[],intset &a,intset &b){
+
+    intset::iterator i=a.begin();
+    intset::iterator j=b.begin();
+
+    while(i!=a.end()&&j!=b.end()){
+        for(int x=0;x<=4;x++){
+
+         if(G[x].generator2==*i && G[x].generator3==*j){
+                return G[x].generator;
+         }
+        }
+        i++;
+        j++;
+    }
+
+    /*while(i!=a.end()){
+        printf("\nNii,k     %c ",*i);
+        i++;
+    }
+    while(k!=b.end()){
+        printf("\nNii+k,j-k %c ",*k);
+        k++;
+    }*/
+
+
 }
 std::set<char> buildset(char r){
     std::set<char> aux;
