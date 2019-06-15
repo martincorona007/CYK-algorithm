@@ -8,26 +8,26 @@ typedef std::map<int, intset>row;
 typedef std::map<int, row> table;
 table N;
 typedef struct grammar{
-    char generator;
+    char generator; //example S->AB generator=S generator2=A generator3=B
     char generator2;
     char generator3;
-    char terminal;
+    char terminal;//example S->x generator=S terminal=x
 
 };
 
-bool CYK(grammar G[],char*);
-int length(char*);
-void print(intset &a);
-char getS(intset &on);
-char step_seven(grammar G[],intset &a,intset &b);
-std::set<char> buildset(char r);
+bool CYK(grammar G[],char*);//the algorithm
+int length(char*);//get the length of the word
+void print(grammar G[]);
+char getS(intset &on);//get the value of N[%i][%i] where is all generators
+char step_seven(grammar G[],intset &a,intset &b);//step seven of the algorithm
+std::set<char> buildset(char r);//add to the intset
 
 
 
 int main()
 {
     char W[15];
-    std::cout << "write the word ";
+    std::cout << "Write the word: ";
     std::cin>>W;
     bool val;
     //printf("length %i",length(W));
@@ -59,113 +59,80 @@ int main()
 
     G[6].generator=83;//S
     G[6].terminal=120;//x
+
+
+    print(G);//print grammar
     val=CYK(G,W);
     if(val){
-        printf("\n accepted");
+        printf("\n Accepted");
     }else{
-        printf("\n rejected");
+        printf("\n Rejected");
     }
 /*
     S 83 C 67    A 65   R 82    K 75    B 66    D 68    l 108   c 99     x 120 t 116
     */
 
-printf("\ntable \n\n");
-	for (int i = 1;i <=length(W);i++) {
 
-		for (int j = 1;j <= length(W);j++) {
-            if((i==1&&j==2)|| (i==2&&j==2)){
-                printf("\n\t t[%i,%i]", i, j);
-
-            }else if(i==1&&j==3){
-                printf("\n\t\t t[%i,%i]", i, j);
-
-            }else{
-             printf("\nt[%i,%i]", i, j);
-
-            }
-
-
-			print(N[i][j]);
-		}
-	}
     return 0;
 }
 bool CYK(grammar G[],char *w){
     int n=0;//length
     int a=0;//run over the word
-    int i=1;
-    char res;
+    int i=1;//index
+    char res;//get the generator from step_seven
         n=length(w);//get the length of the word
 
         while(i<=n){
-            for(int x=3;x<7;x++){
-                if(G[x].terminal==w[a]){
-                     printf("\nconstruye el conjunto  %i,%i",i,1);
-                        N[i][1]=buildset(G[x].generator);
+            for(int x=3;x<7;x++){//specify where are the terminals on the grammar
+                if(G[x].terminal==w[a]){//check if the word given is equals to the terminals on the grammar
+                         N[i][1]=buildset(G[x].generator);//then insert in the set
                        a++;
                        i++;
                 }
             }
         }
-        for(int j=2;j<=n;j++){
+        for(int j=2;j<=n;j++){//index
 
-            for(int ii=1;ii<=n-j+1;ii++){
+            for(int ii=1;ii<=n-j+1;ii++){//index
                 N[ii][j]=buildset(' ');
-                for(int k=1;k<=j-1;k++){
-                printf("\n in N[%i][%i] from N[%i]][%i]",ii,j,ii,k);
+                for(int k=1;k<=j-1;k++){//index
 
-                res=step_seven(G,N[ii][k],N[ii+k][j-k]);
+                  res=step_seven(G,N[ii][k],N[ii+k][j-k]);//get generator from the grammar
+            /*this conditional it's for no remplace the set by 0 */
+                    if(res==0||res=='\n'){//check if res is equals to 0 or blank, this means that there's not generator
+                        if(getS( N[ii][j])=='\0'|| getS( N[ii][j])==0){//Here i get what is on the set,and compare to 0 and black
+                             N[ii][j]=buildset(' ');
+                        }//if there is a generator on the set don't do nothing.
+                    }else{
 
-                if(res==0||res=='\n'){
-                    if(getS( N[ii][j])=='\0'|| getS( N[ii][j])==0){
-                         N[ii][j]=buildset(' ');
+
+                        N[ii][j]=buildset(res);//save on the set
                     }
-                }else{
-
-
-                    N[ii][j]=buildset(res);
-                }
                 }
             }
         }
 
-        /*
-        for(int j=2;j<=n;j++){
-            for(int ii=1;ii<n-j+1;ii++){
-                N[ii][j]=buildset('0');
-                for(int k=1;k<j-1;k++){/*
-                    intset::iterator it;
-                    it=intset.find(N[ii][k]);
-                }
-            }
-        }*/
 
 
-return N[1][n].find('S')!=N[1][n].end();
+
+return N[1][n].find('S')!=N[1][n].end();//check if reach on the last cell
 }
 char step_seven(grammar G[],intset &a,intset &b){
 
-    intset::iterator i=a.begin();
-    intset::iterator j=b.begin();
+    intset::iterator i=a.begin();//iterator
+    intset::iterator j=b.begin();//iterator
 
 
-    while(i!=a.end()&&j!=b.end()){
-        for(int x=0;x<=2;x++){
-            printf("\t {%c %c}",*i,*j);
-             if(G[x].generator2==*i && G[x].generator3==*j){
-                   printf(" gen %c",G[x].generator);
+    while(i!=a.end()&&j!=b.end()){//iterate to the end
+        for(int x=0;x<=2;x++){//specify where is the generator on the grammar
 
-                    return G[x].generator;
-             }/*else{
-                return (*k=='\0')?:*k;
-             }*/
+             if(G[x].generator2==*i && G[x].generator3==*j){//check generators on the grammar
+
+                    return G[x].generator;//return
+             }
         }
 
-         /*if(G[x].generator2!=*i && G[x].generator3!=*j){
-               // printf(" gen %c",G[x].generator);
 
-               return G[x].generator;
-         }*/
 
 
         i++;
@@ -173,41 +140,34 @@ char step_seven(grammar G[],intset &a,intset &b){
 
     }
 
-    /*while(i!=a.end()){
-        printf("\nNii,k     %c ",*i);
-        i++;
-    }
-    while(k!=b.end()){
-        printf("\nNii+k,j-k %c ",*k);
-        k++;
-    }*/
-    return '\0';
+
+    return '\0';//return black if the algorithm not found on the grammar
 
 }
 std::set<char> buildset(char r){
     std::set<char> aux;
     aux.insert(r);
-    printf("\n conjunto generado: ");
-    print(aux);
 return aux;
-
 }
 char getS(intset &on){
     intset::iterator i=on.begin();
     while(i!=on.end()){
-        //printf("%s ",*i);
-        //std::cout<<*i;
         return *i;
         i++;
     }
 }
-void print(intset &a){
-    intset::iterator i=a.begin();
-    while(i!=a.end()){
-        //printf("%s ",*i);
-        std::cout<<*i;
-        i++;
+void print(grammar G[]){
+
+    for(int i=0;i<=2;i++){
+        std::cout<<"\n"<<G[i].generator<<"->"<<G[i].generator2<<" "<<G[i].generator3;
+
     }
+    for(int x=3;x<=6;x++){
+        std::cout<<"\n"<<G[x].generator<<"->"<<G[x].terminal;
+
+    }
+
+
 }
 int length(char *w){
     int i=0;
